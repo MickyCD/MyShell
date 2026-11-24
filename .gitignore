@@ -1,0 +1,5 @@
+# compiled shell
+MyShell
+
+# object files
+*.o
