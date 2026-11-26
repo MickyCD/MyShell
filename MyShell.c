@@ -8,7 +8,6 @@ int main(void)
 {
     char *input = NULL; // Pointer to hold input
     size_t len = 0; //size of input buffer
-    ssize_t read;
 
     while(1)
     {
@@ -20,7 +19,7 @@ int main(void)
 
         fflush(stdout); // Flush the output buffer to ensure prompt is displayed
 
-        nread = getline(&input, &len, stdin); 
+        ssize_t nread = getline(&input, &len, stdin); 
         if (nread == -1) 
         {
             // Handle error or EOF
@@ -40,6 +39,29 @@ int main(void)
         {
             continue; // No command entered, continue to next
         }
+
+        // ex. instance 1: Real pid = 2111, pid = 2112, instance 2: Real pid = 2112, pid = 0
+        pid_t pid = fork(); // Create a new process
+        if (pid == 0)
+        {
+            // Child process
+            if (execvp(command[0], command) == -1)
+            {
+                perror(command[0]); // Print error if execvp fails
+                exit(1); // Exit child process with failure
+            }
+        }
+        else if (pid < 0)
+        {
+            // Fork failed
+            perror("fork failed"); // Print error if fork fails
+        }
+        else
+        {
+            // Parent process
+            waitpid(pid, NULL, 0); // Wait for child process to finish
+        }
+
     }
     free(input);
     return 0;
