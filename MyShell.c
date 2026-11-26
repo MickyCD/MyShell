@@ -40,6 +40,25 @@ int main(void)
             continue; // No command entered, continue to next
         }
 
+        if(strcmp(command[0], "exit") == 0)
+        {
+            break; // Exit the shell if command is "exit"
+        }
+        if(strcmp(command[0], "cd") == 0)
+        {
+            if (command[1] == NULL)
+            {
+                fprintf(stderr, "expected: cd [destination]\n"); // Error if no directory is provided
+            }
+            else
+            {
+                if (chdir(command[1]) != 0)
+                {
+                    perror("cd failed"); // Print error if chdir fails
+                }
+            }
+            continue; // Continue to next loop after handling cd
+        }
         // ex. instance 1: Real pid = 2111, pid = 2112, instance 2: Real pid = 2112, pid = 0
         pid_t pid = fork(); // Create a new process
         if (pid == 0)
